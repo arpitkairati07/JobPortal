@@ -13,6 +13,7 @@ app.get("/home",(req,res)=>{
         success:true
     })
 })
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
