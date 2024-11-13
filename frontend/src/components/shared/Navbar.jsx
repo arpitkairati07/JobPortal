@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
@@ -33,7 +34,14 @@ const Navbar = () => {
                 <Avatar className="cursor-pointer">
                   <AvatarImage src="https://github.com/shadcn.png" />
                 </Avatar>
+                <div>
                 <h4 className="font-medium">Arpit Kairati</h4>
+                <p className="text-sm text-muted-foreground">Lorem ipsum dolor sit amet.</p>
+                </div>
+              </div>
+              <div>
+                <Button variant="link">View Profile</Button>
+                <Button variant="link">LogOut</Button>
               </div>
             </PopoverContent>
           </Popover>
