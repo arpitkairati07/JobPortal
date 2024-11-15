@@ -20,6 +20,7 @@ const Signup = () => {
     file: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
@@ -32,6 +33,19 @@ const Signup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    // Validate inputs before submission
+    if (
+      !input.fullname ||
+      !input.email ||
+      !input.phoneNumber ||
+      !input.password ||
+      !input.role
+    ) {
+      toast.error("Please fill out all required fields!");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("fullname", input.fullname);
     formData.append("email", input.email);
@@ -43,17 +57,20 @@ const Signup = () => {
     }
 
     try {
+      setLoading(true);
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
         withCredentials: true,
       });
 
       if (res.data.success) {
         toast.success(res.data.message);
-        navigate("/login"); 
+        navigate("/login");
       }
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,7 +80,7 @@ const Signup = () => {
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
           onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-6 my-10 bg-white shadow-lg"
+          className="w-full sm:w-3/4 md:w-1/2 border border-gray-200 rounded-md p-6 my-10 bg-white shadow-lg"
         >
           <h1 className="font-bold text-2xl mb-6 text-center">
             Create an Account
@@ -126,54 +143,59 @@ const Signup = () => {
           </div>
 
           {/* Select Profession */}
-          <div className="flex items-center justify-between my-4">
-            <RadioGroup
-              defaultValue="option-one"
-              className="flex items-center gap-4"
-            >
+          <div className="my-4">
+            <Label className="block mb-2">I'm a</Label>
+            <RadioGroup defaultValue="student" className="flex items-center gap-4">
+              {/* Student Option */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
+                  id="student"
                   name="role"
+                  value="student"
                   checked={input.role === "student"}
                   onChange={changeEventHandler}
-                  value="student"
                   className="cursor-pointer"
                 />
-                <Label htmlFor="option-one">Student</Label>
+                <Label htmlFor="student">Student</Label>
               </div>
+
+              {/* Recruiter Option */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
+                  id="recruiter"
                   name="role"
+                  value="recruiter"
                   checked={input.role === "recruiter"}
                   onChange={changeEventHandler}
-                  value="recruiter"
                   className="cursor-pointer"
                 />
-                <Label htmlFor="option-two">Recruiter</Label>
+                <Label htmlFor="recruiter">Recruiter</Label>
               </div>
             </RadioGroup>
+          </div>
 
-            {/* Profile Picture */}
-            <div className="flex items-center gap-2">
-              <Label htmlFor="profile">Profile Picture</Label>
-              <Input
-                id="profile"
-                accept="image/*"
-                type="file"
-                onChange={changeFileHandler}
-                className="cursor-pointer"
-              />
-            </div>
+          {/* Profile Picture */}
+          <div className="my-4">
+            <Label htmlFor="profile">Profile Picture</Label>
+            <Input
+              id="profile"
+              accept="image/*"
+              type="file"
+              onChange={changeFileHandler}
+              className="cursor-pointer"
+            />
+            {input.file && <p className="text-sm text-gray-500 mt-2">Selected file: {input.file.name}</p>}
           </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
             className="w-full bg-[#6a38c2] hover:bg-[#5b30a6] text-white font-semibold py-2 rounded-md mt-6"
+            disabled={loading}
           >
-            SignUp
+            {loading ? "Signing Up..." : "SignUp"}
           </Button>
 
           {/* Login Link */}

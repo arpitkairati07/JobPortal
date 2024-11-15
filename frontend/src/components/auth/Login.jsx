@@ -17,6 +17,7 @@ const Login = () => {
     role: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
@@ -26,12 +27,19 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    // Validate inputs
+    if (!input.email || !input.password) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     if (!input.role) {
       toast.error("Please select a role.");
       return;
     }
 
     try {
+      setLoading(true);
       const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
         headers: {
           "Content-Type": "application/json",
@@ -40,12 +48,14 @@ const Login = () => {
       });
 
       if (res.data.success) {
-        navigate("/"); // Navigate to home page on success
         toast.success(res.data.message);
+        navigate("/"); // Navigate to home page
       }
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,7 +65,7 @@ const Login = () => {
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
           onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-6 my-10 bg-white shadow-lg"
+          className="w-full sm:w-3/4 md:w-1/2 border border-gray-200 rounded-md p-6 my-10 bg-white shadow-lg"
         >
           <h1 className="font-bold text-2xl mb-6 text-center">Login</h1>
 
@@ -88,32 +98,35 @@ const Login = () => {
           </div>
 
           {/* Select Profession */}
-          <div className="flex items-center justify-between my-4">
-            <RadioGroup
-              defaultValue="option-one"
-              className="flex items-center gap-4"
-            >
+          <div className="my-4">
+            <Label className="block mb-2">I'm a</Label>
+            <RadioGroup defaultValue="student" className="flex items-center gap-4">
+              {/* Student Option */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
+                  id="student"
                   name="role"
-                  checked={input.role === 'student'}
-                  onChange={changeEventHandler}
                   value="student"
+                  checked={input.role === "student"}
+                  onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="option-one">Student</Label>
+                <Label htmlFor="student">Student</Label>
               </div>
+
+              {/* Recruiter Option */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
+                  id="recruiter"
                   name="role"
-                  checked={input.role === 'recruiter'}
-                  onChange={changeEventHandler}
                   value="recruiter"
+                  checked={input.role === "recruiter"}
+                  onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="option-two">Recruiter</Label>
+                <Label htmlFor="recruiter">Recruiter</Label>
               </div>
             </RadioGroup>
           </div>
@@ -122,8 +135,9 @@ const Login = () => {
           <Button
             type="submit"
             className="w-full bg-[#6a38c2] hover:bg-[#5b30a6] text-white font-semibold py-2 rounded-md mt-6"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging In..." : "Login"}
           </Button>
 
           {/* Signup Link */}
