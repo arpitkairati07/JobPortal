@@ -16,6 +16,7 @@ const Signup = () => {
     role: "",
     file: "",
   });
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -23,13 +24,14 @@ const Signup = () => {
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
-  const submitHandler=async (e)=>{
-    e.preventDefault(); 
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
     console.log(input);
-  }
+  };
 
   return (
-    <div>
+    <div className="rounded-lg overflow-hidden shadow-lg bg-gray-50">
       <Navbar />
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
@@ -43,19 +45,40 @@ const Signup = () => {
           {/* Full Name */}
           <div className="my-4">
             <Label htmlFor="fullName">Full Name</Label>
-            <Input id="fullName" type="text" value={input.fullname} name="fullname" onChange={changeEventHandler} placeholder="John Doe" />
+            <Input
+              id="fullName"
+              type="text"
+              value={input.fullname}
+              name="fullname"
+              onChange={changeEventHandler}
+              placeholder="John Doe"
+            />
           </div>
 
           {/* Email */}
           <div className="my-4">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={input.email} name="email" onChange={changeEventHandler} placeholder="johndoe@gmail.com" />
+            <Input
+              id="email"
+              type="email"
+              value={input.email}
+              name="email"
+              onChange={changeEventHandler}
+              placeholder="johndoe@gmail.com"
+            />
           </div>
 
           {/* Phone Number */}
           <div className="my-4">
             <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="number" value={input.phoneNumber} name="phoneNumber" onChange={changeEventHandler} placeholder="9026776494" />
+            <Input
+              id="phone"
+              type="number"
+              value={input.phoneNumber}
+              name="phoneNumber"
+              onChange={changeEventHandler}
+              placeholder="9026776494"
+            />
           </div>
 
           {/* Password */}
@@ -64,7 +87,9 @@ const Signup = () => {
             <Input
               id="password"
               type="password"
-              value={input.password} name="password" onChange={changeEventHandler}
+              value={input.password}
+              name="password"
+              onChange={changeEventHandler}
               placeholder="Enter your password"
             />
           </div>
@@ -79,7 +104,7 @@ const Signup = () => {
                 <Input
                   type="radio"
                   name="role"
-                  checked={input.role === 'student'}
+                  checked={input.role === "student"}
                   onChange={changeEventHandler}
                   value="student"
                   className="cursor-pointer"
@@ -90,7 +115,7 @@ const Signup = () => {
                 <Input
                   type="radio"
                   name="role"
-                  checked={input.role === 'recruiter'}
+                  checked={input.role === "recruiter"}
                   onChange={changeEventHandler}
                   value="recruiter"
                   className="cursor-pointer"
