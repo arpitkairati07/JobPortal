@@ -49,7 +49,7 @@ const Signup = () => {
 
       if (res.data.success) {
         toast.success(res.data.message);
-        navigate("/login"); // Navigate after successful registration
+        navigate("/login"); 
       }
     } catch (error) {
       console.error(error);
@@ -79,6 +79,7 @@ const Signup = () => {
               name="fullname"
               onChange={changeEventHandler}
               placeholder="John Doe"
+              className="placeholder-gray-100"
             />
           </div>
 
@@ -92,6 +93,7 @@ const Signup = () => {
               name="email"
               onChange={changeEventHandler}
               placeholder="johndoe@gmail.com"
+              className="placeholder-gray-100"
             />
           </div>
 
@@ -105,6 +107,7 @@ const Signup = () => {
               name="phoneNumber"
               onChange={changeEventHandler}
               placeholder="9026776494"
+              className="placeholder-gray-100"
             />
           </div>
 
@@ -118,6 +121,7 @@ const Signup = () => {
               name="password"
               onChange={changeEventHandler}
               placeholder="Enter your password"
+              className="placeholder-gray-100"
             />
           </div>
 
