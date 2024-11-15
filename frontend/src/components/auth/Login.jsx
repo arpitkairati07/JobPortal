@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
-import { Label } from '../ui/label';
+import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup } from "../ui/radio-group";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 
 const Login = () => {
@@ -14,28 +17,35 @@ const Login = () => {
     role: "",
   });
 
+  const navigate = useNavigate();
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    try {
-      const res=await axios.post(`${USER_API_END_POINT}/login`,input,{
-        headers:{
-          "Content-Type":"application/json"
-        },
-        withCredentials:true
-      });
-      const navigate=useNavigate();
 
-      if(res.data.success){
-        navigate("/"); 
+    if (!input.role) {
+      toast.error("Please select a role.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        navigate("/"); // Navigate to home page on success
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message);
+      console.error(error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred.");
     }
   };
 
