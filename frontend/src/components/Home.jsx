@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from './shared/Navbar'
 import Hero from './Hero'
 import CategoryCarousel from './CategoryCarousel'
+import LatestJobs from './LatestJobs'
 
 const Home = () => {
   return (
@@ -9,8 +10,8 @@ const Home = () => {
       <Navbar></Navbar>
       <Hero></Hero>
        <CategoryCarousel></CategoryCarousel>
-      {/* <LatestJobs></LatestJobs>
-      <Footer></Footer>  */}
+      <LatestJobs></LatestJobs>
+      {/* <Footer></Footer>  */}
     </div>
   )
 }
