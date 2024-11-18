@@ -1,26 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "../shared/Navbar";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { RadioGroup } from "../ui/radio-group";
-import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import { USER_API_END_POINT } from "@/utils/constant";
-import { toast } from "sonner";
+import React, { useEffect, useState } from 'react';
+import Navbar from '../shared/Navbar';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { RadioGroup } from '../ui/radio-group';
+import { Button } from '../ui/button';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { USER_API_END_POINT } from '@/utils/constant';
+import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '@/redux/authSlice';
+import { Loader2 } from 'lucide-react';
 
 const Signup = () => {
   const [input, setInput] = useState({
-    fullname: "",
-    email: "",
-    phoneNumber: "",
-    password: "",
-    role: "",
-    file: "",
+    fullname: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    role: '',
+    file: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const { loading, user } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
@@ -34,174 +37,163 @@ const Signup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    // Validate inputs before submission
-    if (
-      !input.fullname ||
-      !input.email ||
-      !input.phoneNumber ||
-      !input.password ||
-      !input.role
-    ) {
-      toast.error("Please fill out all required fields!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("fullname", input.fullname);
-    formData.append("email", input.email);
-    formData.append("phoneNumber", input.phoneNumber);
-    formData.append("password", input.password);
-    formData.append("role", input.role);
+    const formData = new FormData(); // FormData object
+    formData.append('fullname', input.fullname);
+    formData.append('email', input.email);
+    formData.append('phoneNumber', input.phoneNumber);
+    formData.append('password', input.password);
+    formData.append('role', input.role);
     if (input.file) {
-      formData.append("file", input.file);
+      formData.append('file', input.file);
     }
 
     try {
-      setLoading(true);
+      dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true,
       });
-
       if (res.data.success) {
+        navigate('/login');
         toast.success(res.data.message);
-        navigate("/login");
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response.data.message || 'An unexpected error occurred.');
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   return (
-    <div className="rounded-lg overflow-hidden shadow-lg bg-gray-50">
+    <div>
       <Navbar />
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
+      <div className="flex items-center justify-center min-h-screen">
         <form
           onSubmit={submitHandler}
-          className="w-full sm:w-3/4 md:w-1/2 border border-gray-200 rounded-md p-6 my-10 bg-white shadow-lg"
+          className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg"
         >
-          <h1 className="font-bold text-2xl mb-6 text-center">
-            Create an Account
+          <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
+            Create Your Account
           </h1>
 
           {/* Full Name */}
-          <div className="my-4">
-            <Label htmlFor="fullName">Full Name</Label>
+          <div className="mb-4">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">Full Name</Label>
             <Input
-              id="fullName"
               type="text"
               value={input.fullname}
               name="fullname"
               onChange={changeEventHandler}
-              placeholder="John Doe"
-              className="placeholder-gray-100"
+              placeholder="Enter your full name"
+              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
 
           {/* Email */}
-          <div className="my-4">
-            <Label htmlFor="email">Email</Label>
+          <div className="mb-4">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">Email</Label>
             <Input
-              id="email"
               type="email"
               value={input.email}
               name="email"
               onChange={changeEventHandler}
-              placeholder="johndoe@gmail.com"
-              className="placeholder-gray-100"
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
 
           {/* Phone Number */}
-          <div className="my-4">
-            <Label htmlFor="phone">Phone Number</Label>
+          <div className="mb-4">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">Phone Number</Label>
             <Input
-              id="phone"
-              type="number"
+              type="text"
               value={input.phoneNumber}
               name="phoneNumber"
               onChange={changeEventHandler}
-              placeholder="9026776494"
-              className="placeholder-gray-100"
+              placeholder="Enter your phone number"
+              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
 
           {/* Password */}
-          <div className="my-4">
-            <Label htmlFor="password">Password</Label>
+          <div className="mb-4">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">Password</Label>
             <Input
-              id="password"
               type="password"
               value={input.password}
               name="password"
               onChange={changeEventHandler}
               placeholder="Enter your password"
-              className="placeholder-gray-100"
+              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
 
-          {/* Select Profession */}
-          <div className="my-4">
-            <Label className="block mb-2">I'm a</Label>
-            <RadioGroup defaultValue="student" className="flex items-center gap-4">
-              {/* Student Option */}
-              <div className="flex items-center space-x-2">
+          {/* Role Selection */}
+          <div className="mb-4">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">I'm a</Label>
+            <RadioGroup className="flex items-center gap-4">
+              <div className="flex items-center">
                 <Input
                   type="radio"
-                  id="student"
                   name="role"
                   value="student"
-                  checked={input.role === "student"}
+                  checked={input.role === 'student'}
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="student">Student</Label>
+                <Label className="ml-2 text-gray-700">Student</Label>
               </div>
-
-              {/* Recruiter Option */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 <Input
                   type="radio"
-                  id="recruiter"
                   name="role"
                   value="recruiter"
-                  checked={input.role === "recruiter"}
+                  checked={input.role === 'recruiter'}
                   onChange={changeEventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="recruiter">Recruiter</Label>
+                <Label className="ml-2 text-gray-700">Recruiter</Label>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Profile Picture */}
-          <div className="my-4">
-            <Label htmlFor="profile">Profile Picture</Label>
+          {/* Profile Upload */}
+          <div className="mb-6">
+            <Label className="block text-sm font-semibold text-gray-600 mb-2">Profile Picture</Label>
             <Input
-              id="profile"
               accept="image/*"
               type="file"
               onChange={changeFileHandler}
-              className="cursor-pointer"
+              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
-            {input.file && <p className="text-sm text-gray-500 mt-2">Selected file: {input.file.name}</p>}
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full bg-[#6a38c2] hover:bg-[#5b30a6] text-white font-semibold py-2 rounded-md mt-6"
-            disabled={loading}
-          >
-            {loading ? "Signing Up..." : "SignUp"}
-          </Button>
+          {loading ? (
+            <Button className="w-full py-2 bg-purple-600 text-white rounded-lg flex items-center justify-center">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
+            >
+              Signup
+            </Button>
+          )}
 
           {/* Login Link */}
-          <p className="text-center text-gray-600 mt-4">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 hover:underline">
+          <p className="text-sm text-gray-600 text-center mt-4">
+            Already have an account?{' '}
+            <Link to="/login" className="text-purple-600 hover:underline">
               Login
             </Link>
           </p>
