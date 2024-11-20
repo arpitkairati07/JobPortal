@@ -3,8 +3,11 @@ import { Button } from './ui/button';
 import { Badge, Bookmark } from 'lucide-react';
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import companyLogo from '../assets/Images/company-logo.webp';
+import { useNavigate } from 'react-router-dom';
 
 const Job = () => {
+  const navigate=useNavigate();
+  const jobId='jdhjksdhncknkhehf';
   return (
     <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
       {/* Header */}
@@ -57,6 +60,7 @@ const Job = () => {
         <Button
           variant="outline"
           className="rounded-full hover:bg-gray-100 hover:border-gray-400"
+          onClick={()=> navigate(`/description/${jobId}`)}
         >
           Details
         </Button>
