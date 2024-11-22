@@ -7,13 +7,15 @@ import { Badge, Contact, Mail, Pen } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfileDialog from "./UpdateProfileDialog";
+import { useSelector } from "react-redux";
 
-const skills = ["React", "ExpressJs", "MongoDB", "NodeJS"];
+// const skills = ["React", "ExpressJs", "MongoDB", "NodeJS"];
 
 const isResume=true;
 
 const Profile = () => {
   const [open,setOpen]=useState(false);
+  const {user} =useSelector(store=>store.auth);
 
   return (
     <div>
@@ -29,10 +31,9 @@ const Profile = () => {
 
             {/* Profile Information */}
             <div>
-              <h1 className="text-2xl font-semibold">Full Name</h1>
+              <h1 className="text-2xl font-semibold">{user?.fullname}</h1>
               <p className="text-gray-600">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Corrupti consectetur impedit magnam dolorem, molestiae error.
+                {user?.profile?.bio}
               </p>
             </div>
           </div>
@@ -48,20 +49,20 @@ const Profile = () => {
         <div className="flex flex-wrap gap-4 mt-6">
           <div className="flex items-center gap-2 text-gray-700">
             <Mail className="h-5 w-5" />
-            <span>arpit@gmail.com</span>
+            <span>{user?.email}</span>
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <Contact className="h-5 w-5" />
-            <span>9026776494</span>
+            <span>{user?.phoneNumber}</span>
           </div>
         </div>
 
         {/* Skills Section */}
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-2">Skills</h2>
-          {skills.length !== 0 ? (
+          {user?.profile?.skills.length !== 0 ? (
             <div className="flex flex-wrap gap-2">
-              {skills.map((item, index) => (
+              {user?.profile?.skills.map((item, index) => (
                 <span
                   key={index}
                   className="flex items-center gap-1 bg-blue-100 text-blue-700 font-medium px-3 py-1 rounded-full text-sm"
