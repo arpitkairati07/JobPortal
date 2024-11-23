@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -25,10 +19,13 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     email: user?.email || "",
     phoneNumber: user?.phoneNumber || "",
     bio: user?.profile?.bio || "",
-    skills: user?.profile?.skills?.map((skill) => skill) || "",
+    skills: user?.profile?.skills?.map((skill) => skill).join(", ") || "",
     file: user?.profile?.resume || "",
   });
-  
+
+  // New state to hold the file name of the uploaded resume
+  const [fileName, setFileName] = useState(input.file ? input.file : "");
+
   const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
@@ -37,7 +34,10 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
 
   const fileChangeHandler = (e) => {
     const file = e.target.files?.[0];
-    setInput({ ...input, file });
+    if (file) {
+      setInput({ ...input, file });
+      setFileName(file.name);  // Store the file name to show to the user
+    }
   };
 
   const submitHandler = async (e) => {
@@ -51,6 +51,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     if (input.file) {
       formData.append("file", input.file);
     }
+
     try {
       setLoading(true);
       const res = await axios.post(
@@ -63,18 +64,20 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
           withCredentials: true,
         }
       );
+
       if (res.data.success) {
         dispatch(setUser(res.data.user));
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);  // Show error message from backend
+      }
     } finally {
       setLoading(false);
     }
     setOpen(false);
-    console.log(input);
   };
 
   return (
@@ -136,19 +139,6 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="bio" className="text-right text-sm font-medium text-black">
-                  Bio
-                </Label>
-                <Input
-                  id="bio"
-                  name="bio"
-                  value={input.bio}
-                  onChange={changeEventHandler}
-                  placeholder="Enter a short bio"
-                  className="col-span-3 border-2 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="skills" className="text-right text-sm font-medium text-black">
                   Skills
                 </Label>
@@ -157,34 +147,46 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                   name="skills"
                   value={input.skills}
                   onChange={changeEventHandler}
-                  placeholder="Enter your skills"
+                  placeholder="e.g., JavaScript, React"
+                  required
+                  className="col-span-3 border-2 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="bio" className="text-right text-sm font-medium text-black">
+                  Bio
+                </Label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  value={input.bio}
+                  onChange={changeEventHandler}
+                  placeholder="Tell us about yourself"
                   className="col-span-3 border-2 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="file" className="text-right text-sm font-medium text-black">
-                  Resume
+                  Upload Resume
                 </Label>
-                <Input
+                <input
+                  type="file"
                   id="file"
                   name="file"
-                  type="file"
-                  accept="application/pdf"
                   onChange={fileChangeHandler}
-                  className="col-span-3 border-2 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                  className="col-span-3"
                 />
+                {fileName && (
+                  <div className="col-span-3 text-sm mt-2 text-gray-600">
+                    <span>Uploaded File: {fileName}</span>
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
-              {loading ? (
-                <Button className="w-full my-4 bg-teal-500 text-white hover:bg-teal-600">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
-                </Button>
-              ) : (
-                <Button type="submit" className="w-full my-4 bg-teal-500 text-white hover:bg-teal-600">
-                  Update
-                </Button>
-              )}
+              <Button type="submit" disabled={loading} className="w-full py-3 bg-teal-500 text-white">
+                {loading ? <Loader2 className="animate-spin" /> : "Save Changes"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

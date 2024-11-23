@@ -105,30 +105,48 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, bio, skills } = req.body;
-        // console.log(fullname,email,phoneNumber,bio,skills)
-        const file=req.file;
+        const file = req.file;
+
         let skillsArray;
-        if(skills){
-             skillsArray=skills.split(",");
+        if (skills) {
+            skillsArray = skills.split(",");
         }
 
-        const userId=req.id;
-        let user=await User.findById(userId);
-        if(!user){
+        const userId = req.id; // Assuming you get user ID from a JWT or session
+        let user = await User.findById(userId);
+        if (!user) {
             return res.status(400).json({
-                message: "User is not found",
+                message: "User not found",
                 success: false
-            }); 
-        };
-        // Updating the data
-        if(fullname) user.fullname=fullname
-        if(email) user.email=email
-        if(phoneNumber) user.phoneNumber=phoneNumber
-        if(bio) user.profile.bio=bio
-        if(skills) user.profile.skills=skillsArray
+            });
+        }
+
+        // Check if the new email already exists
+        if (email && email !== user.email) {
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                return res.status(400).json({
+                    message: "Email is already in use by another user.",
+                    success: false
+                });
+            }
+            user.email = email;
+        }
+
+        // Update other fields if provided
+        if (fullname) user.fullname = fullname;
+        if (phoneNumber) user.phoneNumber = phoneNumber;
+        if (bio) user.profile.bio = bio;
+        if (skills) user.profile.skills = skillsArray;
+
+        // Handle file upload (resume)
+        if (file) {
+            user.profile.resume = file.filename; // You can store file URL here
+        }
 
         await user.save();
 
+        // Return the updated user data
         user = {
             _id: user._id,
             fullname: user.fullname,
@@ -136,13 +154,18 @@ export const updateProfile = async (req, res) => {
             phoneNumber: user.phoneNumber,
             role: user.role,
             profile: user.profile
-        }
+        };
+
         return res.status(200).json({
-            message: "Profile updated Successfuly",
+            message: "Profile updated successfully",
             user,
             success: true
-        }); 
+        });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            message: "An error occurred while updating the profile.",
+            success: false
+        });
     }
-}
+};
