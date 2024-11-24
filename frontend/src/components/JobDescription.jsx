@@ -3,19 +3,32 @@ import React, { useEffect } from "react";
 import { Button } from "./ui/button";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { JOB_API_END_POINT } from "@/utils/constant";
+import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
 import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const JobDescription = () => {
-  const isApplied = true;
-  const params=useParams();
-  const jobId=params.id;
   const {singleJob} = useSelector(store=>store.job);
   const {user} = useSelector(store=>store.auth);
+  const isApplied = singleJob?.applications?.some(application=>application.applicant === user?._id) || false;
+  const params=useParams();
+  const jobId=params.id;
   const dispatch=useDispatch();
 
-
+  // Make a function fot the apply section.
+  const applyHandler = async () =>{
+    try {
+      const res= await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`,{withCredentials:true});
+      if(res.data.success){
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  }
+ 
   useEffect(()=>{
     const fetchSingleJob=async() => {
         try {
@@ -51,6 +64,7 @@ const JobDescription = () => {
           </div>
         </div>
         <Button 
+        onClick={isApplied ? null:applyHandler}
           className={`rounded-lg ${isApplied ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md'}`} 
           disabled={isApplied}>
           {isApplied ? 'Already applied' : 'Apply now'}
@@ -66,7 +80,9 @@ const JobDescription = () => {
                 <h1 className='font-bold my-1'>Total Applicants: <span className='pl-4 font-normal text-gray-800'>{singleJob?.applications?.length}</span></h1>
                 <h1 className='font-bold my-1'>Posted Date: <span className='pl-4 font-normal text-gray-800'>{singleJob?.createdAt.split("T")[0]}</span></h1>
             </div>
+
     </div>
+
   );
 };
 
