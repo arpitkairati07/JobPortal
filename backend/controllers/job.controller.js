@@ -78,7 +78,7 @@ export const getJobById = async (req, res) => {
         console.log(error);
     }
 }
-// admin kitne job create kra hai abhi tk
+
 export const getAdminJobs = async (req, res) => {
     try {
         const adminId = req.id;
