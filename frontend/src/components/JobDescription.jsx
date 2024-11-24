@@ -65,22 +65,25 @@ const JobDescription = () => {
   }, [jobId, dispatch, user?._id]);
 
   return (
-    <div className="max-w-7xl mx-auto my-10">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-bold text-xl">{singleJob?.title}</h1>
-          <div className="flex items-center gap-2 mt-4">
-            <Badge className={"text-blue-700 font-bold"} variant="ghost">
-              {singleJob?.postion} Positions
-            </Badge>
-            <Badge className={"text-[#F83002] font-bold"} variant="ghost">
-              {singleJob?.jobType}
-            </Badge>
-            <Badge className={"text-[#7209b7] font-bold"} variant="ghost">
-              {singleJob?.salary}LPA
-            </Badge>
+    <div className="max-w-7xl mx-auto my-16 px-6">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <h1 className="font-extrabold text-2xl text-gray-800">{singleJob?.title}</h1>
+        <div className="flex flex-wrap items-center gap-4 mt-4">
+          <div className="flex items-center gap-2 bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-sm shadow-sm">
+            <Badge size={16} className="text-blue-700" />
+            {singleJob?.position} Positions
+          </div>
+          <div className="flex items-center gap-2 bg-green-100 text-green-700 font-semibold px-3 py-1 rounded-full text-sm shadow-sm">
+            <Badge size={16} className="text-green-700" />
+            {singleJob?.jobType}
+          </div>
+          <div className="flex items-center gap-2 bg-red-100 text-red-700 font-semibold px-3 py-1 rounded-full text-sm shadow-sm">
+            <Badge size={16} className="text-red-700" />
+            {singleJob?.salary} LPA
           </div>
         </div>
+      </div>
         <Button
           onClick={isApplied ? null : applyJobHandler}
           disabled={isApplied}
