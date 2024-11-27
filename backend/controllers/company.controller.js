@@ -1,4 +1,6 @@
 import {Company} from "../models/company.model.js";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const rgisterCompany= async(req,res)=>{
     try {
@@ -6,17 +8,11 @@ export const rgisterCompany= async(req,res)=>{
         if(!companyName){
             return res.status(400).json({
                 message:"Company name is required",
-                success:true
-            });
-        };
-        let company=await Company.findOne({name:companyName});
-        if(company){
-            return res.status(400).json({
-                message:"You cann't resgister same company",
                 success:false
             });
         };
-        company =await Company.create({
+        
+        const company =await Company.create({
             name:companyName,
             userId:req.id
         });
@@ -72,9 +68,12 @@ export const updateCompany=async(req,res)=>{
         const {name, description, website, location}=req.body;
         const file=req.file;
         // cloudinary
+        const fileUri=getDataUri(file);
+        const cloudResponse=await cloudinary.uploader.upload(fileUri.content);
 
+        const logo = cloudResponse.secure_url;
 
-        const updateData={name, description, website, location}
+        const updateData={name, description, website, location,logo}
         
         const company=await Company.findByIdAndUpdate(req.params.id, updateData, {new: true});
         if(!company){
