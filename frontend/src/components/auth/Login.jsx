@@ -77,7 +77,7 @@ const Login = () => {
               value={input.email}
               name="email"
               onChange={changeEventHandler}
-              placeholder="arpitkairati@gmail.com"
+              placeholder="Enter your mail Id"
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
@@ -92,7 +92,7 @@ const Login = () => {
               value={input.password}
               name="password"
               onChange={changeEventHandler}
-              placeholder="Password"
+              placeholder="Enter your Password"
               className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-purple-300"
             />
           </div>
