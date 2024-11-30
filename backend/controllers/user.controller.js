@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+// import { singleUpload } from './multerConfig';  // Assuming this is where your multer config is
 
 export const register = async (req, res) => {
     try {
@@ -111,43 +112,47 @@ export const logout = async (req, res) => {
         console.log(error);
     }
 }
+
+
 export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, bio, skills } = req.body;
-        
-        const file = req.file;
-        // cloudinary ayega idhar
-        const fileUri = getDataUri(file);
-        const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+        const file = req.file;  // Get the uploaded file from the request
 
-
-
-        let skillsArray;
-        if(skills){
-            skillsArray = skills.split(",");
+        let skillsArray = [];
+        if (skills) {
+            skillsArray = skills.split(",").map(skill => skill.trim());
         }
-        const userId = req.id; // middleware authentication
+
+        const userId = req.id;
         let user = await User.findById(userId);
 
         if (!user) {
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "User not found.",
                 success: false
-            })
-        }
-        // updating data
-        if(fullname) user.fullname = fullname
-        if(email) user.email = email
-        if(phoneNumber)  user.phoneNumber = phoneNumber
-        if(bio) user.profile.bio = bio
-        if(skills) user.profile.skills = skillsArray
-      
-        // resume comes later here...
-        if(cloudResponse){
-            user.profile.resume = cloudResponse.secure_url // save the cloudinary url
-            user.profile.resumeOriginalName = file.originalname // Save the original file name
+            });
         }
 
+        // If there's a file, upload it to Cloudinary
+        let cloudResponse;
+        if (file) {
+            const fileUri = getDataUri(file);  // Get data URI for the file
+            cloudResponse = await cloudinary.uploader.upload(fileUri.content);  // Upload to Cloudinary
+        }
+
+        // Update user fields
+        if (fullname) user.fullname = fullname;
+        if (email) user.email = email;
+        if (phoneNumber) user.phoneNumber = phoneNumber;
+        if (bio) user.profile.bio = bio;
+        if (skills) user.profile.skills = skillsArray;
+
+        // Update resume if a new file was uploaded
+        if (cloudResponse) {
+            user.profile.resume = cloudResponse.secure_url;  // Save Cloudinary URL
+            user.profile.resumeOriginalName = file.originalname;  // Save original file name
+        }
 
         await user.save();
 
@@ -158,14 +163,18 @@ export const updateProfile = async (req, res) => {
             phoneNumber: user.phoneNumber,
             role: user.role,
             profile: user.profile
-        }
+        };
 
         return res.status(200).json({
-            message:"Profile updated successfully.",
+            message: "Profile updated successfully.",
             user,
-            success:true
-        })
+            success: true
+        });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({
+            message: 'Something went wrong. Please try again later.',
+            success: false
+        });
     }
-}
+};

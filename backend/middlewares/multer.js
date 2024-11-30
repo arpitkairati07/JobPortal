@@ -1,4 +1,7 @@
-import multer from "multer";
+import multer from 'multer';
 
-const storage=multer.memoryStorage();
-export const singleUpload=multer({storage}).single("file");
+// Use memory storage to hold the file in memory (without saving it on disk)
+const storage = multer.memoryStorage();
+
+// Set up the multer middleware to handle a single file upload
+export const singleUpload = multer({ storage }).single('file');
