@@ -34,7 +34,9 @@ Secure and scalable backend for managing data and requests.
 
 Tech Stack
 
+
 Frontend:
+
 
 Framework: Vite + React
 
@@ -43,6 +45,7 @@ Styling: Tailwind CSS or Shadcn UI Kit
 State Management: Redux
 
 Routing: React Router 
+
 
 Backend:
 
