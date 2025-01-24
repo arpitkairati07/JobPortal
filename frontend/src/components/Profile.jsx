@@ -77,6 +77,7 @@ const Profile = () => {
           ) : (
             <span className="text-gray-500">Not Applicable</span>
           )}
+          
         </div>
         <div className='grid w-full max-w-sm items-center gap-1.5'>
                     <Label className="text-md font-bold">Resume</Label>
@@ -88,11 +89,13 @@ const Profile = () => {
       <div className="max-w-4xl mx-auto bg-white rounded-2xl">
           <h1 className="font-bold text-lg my-5">Applied Jobs</h1>
           {/* Application Table */}
+
           <AppliedJobTable></AppliedJobTable>
         </div> 
         <UpdateProfileDialog open={open} setOpen={setOpen}></UpdateProfileDialog>
     </div>
   );
+
 };
 
 export default Profile;
