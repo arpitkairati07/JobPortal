@@ -40,13 +40,19 @@ A full-stack web application that unites **job seekers** and **job providers** o
 
 ## 📁 Folder Structure
 
-/client -> React frontend
+'''/client -> React frontend
+
 /server -> Node.js + Express backend
+
 /config -> Environment & DB configs
+
 /models -> Mongoose schemas
+
 /controllers -> API logic
+
 /routes -> Express routes
-/middleware -> Auth & error handlers
+
+/middleware -> Auth & error handlers '''
 
 🎯 Future Improvements
 Resume upload and parsing for job seekers.
